@@ -1,0 +1,12 @@
+list:
+- command:
+    action : voice
+  voice:
+    sounds:
+    - hello
+  phrases:
+  - привет
+  - здравствуй
+  - добрый день
+  - добрый вечер
+  - доброе утро
