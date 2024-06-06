@@ -40,5 +40,3 @@ class Recognizer:
             query = self.sr.recognize_google(audio_data=audio,language='ru-RU').lower()
 
         return query
-
-

@@ -1,69 +1,47 @@
 from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QWidget, QFrame, QBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel
 
-
-from wake_word import WakeWordListener, Recognizer
-from commands import COMMAND_DICT
 
 import sys
-import asyncio
-
+from voice_recognation_thread import VoiceRecognationTread
 
 
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
+        self.init_ui()
+        self.init_voice_thread()
 
-        self.wake_world_listener = WakeWordListener()
-        self.recognizer = Recognizer()
-
-        self.frame_main = QFrame()
-        self.layout_top = QBoxLayout()
-        self.layout_top.setParent(self.frame_main)
-        self.frame_main.setLayout(self.layout_top)
-        self.setCentralWidget(self.frame_main)
-
+    def init_ui(self):
         self.setWindowTitle("Lolly")
         self.setFixedSize(QSize(400,400))
+        self.label = QLabel()
+        self.setCentralWidget(self.label)
+        self.label.setText("Готов слушать")
 
-        button1 = QPushButton("Прослушать")
-        button1.clicked.connect(self.button_click)
-        button1.setFixedSize(QSize(50,50))
-
-        button2 = QPushButton("Нажми")
-        button2.clicked.connect(lambda : print("Нажали"))
-        button2.setFixedSize(QSize(50,50))
-
-
+    def init_voice_thread(self):
+        self.voice_thread = VoiceRecognationTread()
+        self.voice_thread.recognized_text_signal.connect(self.after_recognition_phrase)
+        self.voice_thread.start_listen_signal.connect(self.start_listen_process)
+        self.voice_thread.stop_listen_signal.connect(self.stop_listen_process)
+    
     def closeEvent(self, a0: QCloseEvent) -> None:
-        self.wake_world_listener.stop_listen_process()
+        self.voice_thread
         super().closeEvent(a0)
     
-    def button_click(self):
-        # asyncio.ensure_future(self.listen_user_command_and_execute())
-        print("Нажали на первую кнопку")
-
-
+    def start_listen_process(self):
+        self.setStyleSheet("background-color: red;")
     
-    async def listen_user_command_and_execute(self):
-        self.wake_world_listener.start()
-
-        while True:
-            if self.wake_world_listener.is_wake_world():
-                print("Слушаю вас!")
-                try:
-                    user_query = self.recognizer.recognize_speech()
-                    print(user_query)
-                except Recognizer.UnknownValueError:
-                    print("Не распознал")
-
-                command = COMMAND_DICT.get(user_query)
-                if command is not None:
-                    command(self)
-
-
+    def stop_listen_process(self):
+        self.setStyleSheet("background-color: white;")
+    
+    def after_recognition_phrase(self,result):
+        if result["is_recognitioned"]:
+            self.label.setText(result["text"])
+        else:
+            self.label.setText("Не распознал")
 
 
 

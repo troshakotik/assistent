@@ -6,15 +6,12 @@ from pydub.playback import play
 from random import choice
 import subprocess
 
-import playsound
-
 from config import COMMANDS_PATH, COMMANDS_FILE_NAME, SOUNDS_PATH, AUTOHOTKEY_PATH
 
 
 def play_audio(sound):
     audio = AudioSegment.from_file("{}/{}.mp3".format(SOUNDS_PATH,sound))
     play(audio)
-    
 
 
 def parse_commands():
