@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Завершить работу приложения
     action: terminate
   voice:
     sounds:

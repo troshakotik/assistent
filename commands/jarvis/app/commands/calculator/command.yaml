@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Открыть калькулятор
     action: cli
     cli_cmd: calc
   voice:
@@ -15,6 +16,7 @@ list:
   - калькулятор
 
 - command:
+    name: Закрыть калькуляторц
     action: cli
     cli_cmd: taskkill
     cli_args:

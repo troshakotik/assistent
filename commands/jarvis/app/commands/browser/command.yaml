@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Открыть браузер
     action: ahk
     exe_path: ahk/Run browser.exe
   voice:
@@ -13,6 +14,7 @@ list:
   - гугл хром
 
 - command:
+    name: Закрыть браузер
     action: ahk
     exe_path: ahk/Close browser.exe
   voice:
@@ -28,6 +30,7 @@ list:
   - убери браузер
 
 - command:
+    name: Открыть гугл
     action: ahk
     exe_path: ahk/Run website.exe
     exe_args:
@@ -44,6 +47,7 @@ list:
   - перейди в гугл
 
 - command:
+    name: Открыть ютуб
     action: ahk
     exe_path: ahk/Run website.exe
     exe_args:
@@ -60,6 +64,7 @@ list:
   - запусти ютуб
 
 - command:
+    name: Открыть переводчик
     action: ahk
     exe_path: ahk/Run website.exe
     exe_args:

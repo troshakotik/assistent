@@ -9,7 +9,9 @@ warnings.simplefilter("ignore")
 
 
 
-class GigaChatApi:
+class GigaChat:
+    CONNECTION_ERROR = requests.ConnectionError
+
     CLIEND_ID = "2ff56147-c0b0-4c07-8c14-ee749eb73db1"
     CLIENT_SECRET = "22f47e3f-aa18-4f14-9c73-47692234db31"
     AUTH_DATA = "MmZmNTYxNDctYzBiMC00YzA3LThjMTQtZWU3NDllYjczZGIxOjIyZjQ3ZTNmLWFhMTgtNGYxNC05YzczLTQ3NjkyMjM0ZGIzMQ=="
@@ -19,15 +21,19 @@ class GigaChatApi:
 
     SYSTEM_PROMT = "Ты - голосовой асистент в моём приложении, тебя зовут Лолли, сейчас с тобой будет общаться пользователь"
 
-    messages_history = []
+    def clear_history(self):
+        self.messages_history.clear()
+        self.messages_history.append(self.system_message)
 
     def __init__(self) -> None:
-        self.messages_history += [
-            {
-                "role" : "system",
-                "content" : self.SYSTEM_PROMT
-            }
-        ]
+        self.messages_history = [self.system_message]
+    
+    @property
+    def system_message(self):
+        return {
+            "role" : "system",
+            "content" : self.SYSTEM_PROMT
+        }
 
     def update_message_history(self,user_message,chat_answer):
         self.messages_history += [
@@ -78,7 +84,3 @@ class GigaChatApi:
         }
         response = requests.post(self.GET_TOKEN_URL,headers=headers,data=payload,verify=False)
         return response.json()["access_token"]
-
-
-
-giga = GigaChatApi()

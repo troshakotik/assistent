@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Свернуть все окна
     action: ahk
     exe_path: ahk/Roll up windows.exe
     exe_args:
@@ -13,6 +14,7 @@ list:
   - сверни окна
 
 - command:
+    name: Очистить корзину
     action: ahk
     exe_path: ahk/Empty trash.exe
     exe_args:
@@ -27,6 +29,7 @@ list:
   - очистка корзины
 
 - command:
+    name: Запустить диспетчер задач
     action: ahk
     exe_path: ahk/Task manager open.exe
     exe_args:
@@ -41,6 +44,7 @@ list:
   - диспетчер задач
 
 - command:
+    name: Сделать скриншот
     action: ahk
     exe_path: ahk/screenshot.exe
     exe_args:
@@ -55,6 +59,7 @@ list:
   - сними экран
 
 - command:
+    name: Заблокировать компьютер
     action: ahk
     exe_path: ahk/blocking.exe
     exe_args:
@@ -69,6 +74,7 @@ list:
   - заблокируй комп
 
 - command:
+    name: Включить спящий режим
     action: ahk
     exe_path: ahk/sleep.exe
     exe_args:
@@ -84,6 +90,7 @@ list:
   - иди поспи
 
 - command:
+    name: Открыть буфер обмена
     action: ahk
     exe_path: ahk/clipboard.exe
     exe_args:
@@ -99,6 +106,7 @@ list:
   - буфер обмена
 
 - command:
+    name: Сменить раскладку клавиатуры
     action: ahk
     exe_path: ahk/Set language.exe
     exe_args:

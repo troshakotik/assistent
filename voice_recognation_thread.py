@@ -1,6 +1,5 @@
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
 from wake_word import Recognizer, WakeWordListener
-from voice_assistent import VoiceAssistant
 
 from utils import play_wake_world_sound, play_end_of_user_phrase_sound
 
@@ -10,11 +9,11 @@ class VoiceRecognationTread(QThread):
     start_listen_signal = pyqtSignal()
     stop_listen_signal = pyqtSignal()
 
-    def __init__(self) -> None:
+    def __init__(self,voice_assistent) -> None:
         super().__init__()
         self.recognizer = Recognizer()
         self.wake_word_listener = WakeWordListener()
-        self.voice_assistent = VoiceAssistant()
+        self.voice_assistent = voice_assistent
 
     def run(self) -> None:
         self.wake_word_listener.start()

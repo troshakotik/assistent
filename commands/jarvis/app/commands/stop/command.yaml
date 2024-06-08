@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Прекратить прослушивание
     action: stop_chaining
   voice:
     sounds:

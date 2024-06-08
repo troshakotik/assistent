@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Открыть steam
     action: ahk
     exe_path: ahk/Open steam.exe
   voice:
@@ -14,6 +15,7 @@ list:
   - открой стим
 
 - command:
+    name: Закрыть steam
     action: ahk
     exe_path: ahk\Close steam.ahk
   voice:

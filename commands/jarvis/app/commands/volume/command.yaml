@@ -1,5 +1,6 @@
 list:
 - command:
+    name: Отключить звук
     action: ahk
     exe_path: ahk/Mute volume.exe
   voice:
@@ -15,6 +16,7 @@ list:
   - отключи звук
 
 - command:
+    name: Включить звук
     action: ahk
     exe_path: ahk/Mute volume.exe
   voice:
@@ -29,6 +31,7 @@ list:
   - верни звук
 
 - command:
+    name: Уменьшить звук
     action: ahk
     exe_path: ahk/Set sound.exe
     exe_args:
@@ -52,6 +55,7 @@ list:
   - минимальный уровень громкости
 
 - command:
+    name: Громкость на 50 процентов
     action: ahk
     exe_path: ahk/Set sound.exe
     exe_args:
@@ -76,6 +80,7 @@ list:
   - средний уровень громкости
 
 - command:
+    name: Громкость на максимум
     action: ahk
     exe_path: ahk/Set sound.exe
     exe_args:
