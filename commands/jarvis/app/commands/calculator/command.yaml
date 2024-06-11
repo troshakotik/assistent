@@ -5,9 +5,7 @@ list:
     cli_cmd: calc
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
+    - hello
   phrases:
   - включи калькулятор
   - открой калькулятор
@@ -16,7 +14,7 @@ list:
   - калькулятор
 
 - command:
-    name: Закрыть калькуляторц
+    name: Закрыть калькулятор
     action: cli
     cli_cmd: taskkill
     cli_args:
@@ -25,9 +23,7 @@ list:
     - CalculatorApp.exe
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
+    - hello
   phrases:
   - закрой калькулятор
   - отключи калькулятор

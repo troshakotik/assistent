@@ -2,13 +2,12 @@ list:
 - command:
     name: Отключить звук
     action: ahk
-    exe_path: ahk/Mute volume.exe
+    exe_path: ahk/Mute volume.ahk
+    exe_args:
+    - 1
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
   phrases:
   - выключи звук
   - беззвучный режим
@@ -18,13 +17,12 @@ list:
 - command:
     name: Включить звук
     action: ahk
-    exe_path: ahk/Mute volume.exe
+    exe_path: ahk/Mute volume.ahk
+    exe_args:
+    - 0
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
   phrases:
   - включи звук
   - режим со звуком
@@ -33,15 +31,12 @@ list:
 - command:
     name: Уменьшить звук
     action: ahk
-    exe_path: ahk/Set sound.exe
+    exe_path: ahk/Set sound.ahk
     exe_args:
     - 25
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
   phrases:
   - звук на минимум
   - громкость на минимум
@@ -57,15 +52,12 @@ list:
 - command:
     name: Громкость на 50 процентов
     action: ahk
-    exe_path: ahk/Set sound.exe
+    exe_path: ahk/Set sound.ahk
     exe_args:
     - 50
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
   phrases:
   - звук пятьдесят
   - громкость пятьдесят
@@ -82,15 +74,12 @@ list:
 - command:
     name: Громкость на максимум
     action: ahk
-    exe_path: ahk/Set sound.exe
+    exe_path: ahk/Set sound.ahk
     exe_args:
     - 100
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
   phrases:
   - звук сто
   - громкость сто

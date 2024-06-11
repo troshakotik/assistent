@@ -1,81 +1,87 @@
 list:
 - command:
-    name: Открыть браузер
     action: ahk
-    exe_path: ahk/Run browser.exe
-  voice:
-    sounds:
-    - ok1
-    - ok2
-    - ok3
+    exe_args:
+    - http://google.com
+    exe_path: ahk/Run browser.ahk
+    name: Открыть браузер
   phrases:
   - открой браузер
   - открой хром
   - гугл хром
-
-- command:
-    name: Закрыть браузер
-    action: ahk
-    exe_path: ahk/Close browser.exe
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
+    - hello
+    - hello
+- command:
+    action: ahk
+    exe_path: ahk/Close browser.ahk
+    name: Закрыть браузер
   phrases:
   - закрой все браузеры
   - закрой браузер
   - выключи браузер
   - убери браузер
-
-- command:
-    name: Открыть гугл
-    action: ahk
-    exe_path: ahk/Run website.exe
-    exe_args:
-    - http://google.com
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
+    - hello
+    - hello
+    - hello
+- command:
+    action: ahk
+    exe_args:
+    - http://google.com
+    exe_path: ahk/Run browser.ahk
+    name: Открыть гугл
   phrases:
   - открой гугл
   - запусти гугл
   - перейди в гугл
-
-- command:
-    name: Открыть ютуб
-    action: ahk
-    exe_path: ahk/Run website.exe
-    exe_args:
-    - http://youtube.com
   voice:
     sounds:
-    - ok1
-    - ok2
-    - ok3
-    - ok4
+    - hello
+- command:
+    action: ahk
+    exe_args:
+    - http://youtube.com
+    exe_path: ahk/Run website.exe
+    name: Открыть ютуб
   phrases:
   - открой ютуб
   - ютуб
   - запусти ютуб
-
-- command:
-    name: Открыть переводчик
-    action: ahk
-    exe_path: ahk/Run website.exe
-    exe_args:
-    - https://translate.google.com
   voice:
     sounds:
     - ok1
     - ok2
     - ok3
     - ok4
+- command:
+    action: ahk
+    exe_args:
+    - https://translate.google.com
+    exe_path: ahk/Run website.exe
+    name: Открыть переводчик
   phrases:
   - открой переводчик
   - переводчик
   - запусти переводчик
+  voice:
+    sounds:
+    - ok1
+    - ok2
+    - ok3
+    - ok4
+- command:
+    action: ahk
+    exe_args:
+    - https://www.youtube.com/
+    exe_path: ahk/Run browser.ahk
+    name: Открыть ютуб
+  phrases:
+  - открой видео
+  voice:
+    sounds:
+    - hello

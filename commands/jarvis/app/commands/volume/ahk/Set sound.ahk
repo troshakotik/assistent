@@ -1,1 +1,1 @@
-SoundSet, %1%
+SoundSetVolume(A_Args[1])

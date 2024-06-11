@@ -1,12 +1,12 @@
 from pathlib import Path
 import yaml
-import pydub
 import random
 import subprocess
 
 import config
 from utils import play_sound
 from giga_chat_api import GigaChat
+
 
 
 class VoiceAssistant:
@@ -21,16 +21,26 @@ class VoiceAssistant:
         for cmd in self.commands:
             if phrase in map(to_lower,cmd["phrases"]):
                 return cmd
-        # for commands_list in self.commands:
-        #     for cmd in commands_list["list"]:
-        #         if phrase in map(to_lower,cmd["phrases"]):
-        #             cmd["command_path"] = commands_list["path"]
-        #             return cmd
     
+    def do_ahk_script_command(self,command):
+        ahk_script_path = "{}\{}".format(command["command_path"],command["command"]["exe_path"])
+        to_subprocess = [config.AUTOHOTKEY_PATH, ahk_script_path]
+
+        if exe_args := command["command"].get("exe_args"):
+            to_subprocess.extend(map(str,exe_args))
+
+        subprocess.run(to_subprocess)
+    
+    def do_cmd_command(self,command):
+        to_subprocess = [command["command"]["cli_cmd"]]
+        if cli_args := command["command"].get("cli_args"):
+            to_subprocess.extend(cli_args)
+        
+        subprocess.run(to_subprocess)
+
 
     def voice_over_phrase(self,phrase):
         print(f"Todo, phrase : {phrase}")
-
 
     def react(self,phrase):
         cmd = self._fetch_command(phrase)
@@ -42,8 +52,11 @@ class VoiceAssistant:
         play_sound(sound_name)
 
         if cmd["command"]["action"] == "ahk":
-            ahk_script_path = "{}\{}".format(cmd["command_path"],cmd["command"]["exe_path"])
-            subprocess.run([config.AUTOHOTKEY_PATH, ahk_script_path])\
+            self.do_ahk_script_command(cmd)
+        elif cmd["command"]["action"] == "cli":
+            self.do_cmd_command(cmd)
+        elif cmd["command"]["action"] == "terminate":
+            exit()
 
         return True
 

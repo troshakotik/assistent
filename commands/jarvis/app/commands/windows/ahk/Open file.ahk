@@ -1,0 +1,1 @@
+Run ("explorer.exe",A_args[1])
