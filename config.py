@@ -5,3 +5,6 @@ AUTOHOTKEY_PATH = r"C:\Program Files\AutoHotkey\v2\AutoHotkey.exe"
 WAKE_WORLD_SOUND_NAME = "wake_world"
 END_OF_USER_PHRASE_SOUND_NAME = "end_of_user_phrase_sound"
 GIGACHAT_TOKEN_EXPIRE_FILE_PATH = "./temp_files/expire_token.txt"
+
+PORCUPINE_ACCESS_KEY = "9ikPPkZ0kX3/bRJwMcsaRM/sZTk20JziKldZJekb1b02kyjSHPR66g=="
+PORCUPINE_KEYWORD_PATH = "./wake-up-model/Listen-me_en_windows_v3_0_0.ppn"

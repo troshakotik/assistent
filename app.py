@@ -1,327 +1,407 @@
-# from PyQt6.QtCore import QSize, Qt
-# from PyQt6.QtWidgets import (
-#     QApplication, 
-#     QMainWindow,
-#     QLabel,
-#     QWidget,
-#     QPushButton,
-#     QHBoxLayout,
-#     QVBoxLayout,
-#     QListWidget,
-#     QListWidgetItem,
-#     QLineEdit,
-#     QMessageBox
-# )
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtWidgets import (
+    QApplication, 
+    QMainWindow,
+    QLabel,
+    QWidget,
+    QPushButton,
+    QHBoxLayout,
+    QVBoxLayout,
+    QListWidget,
+    QListWidgetItem,
+    QLineEdit,
+    QMessageBox,
+    QLayout
+)
 
 
-# import sys
-# from voice_recognation_thread import VoiceRecognationTread
-# from voice_assistent import VoiceAssistant
-# from utils import beatiful_string, add_command
-# import config
+import sys
+from voice_recognation_thread import VoiceRecognationTread
+from voice_commands import VoiceCommandsStorage,VoiceCommand
+from utils import beatiful_string, add_command, RUSSIAN_LOW_LETTERS
 
 
-# class MainWindow(QMainWindow):
-#     def __init__(self) -> None:
-#         super().__init__()
-#         self.init_ui()
-#         self.init_voice_thread()
-#         self.command_window = None
+class MainWidget(QWidget):
+    def __init__(self,show_command_button_click,stop_listen_button_click):
+        super().__init__()
+        self.show_command_button_click = show_command_button_click
+        self.stop_listen_button_click = stop_listen_button_click
+        self.init_ui()
 
-#     def init_ui(self):
-#         self.setWindowTitle("Lolly")
-#         self.setFixedSize(QSize(400,400))
+    def init_ui(self):
+        layout = QHBoxLayout()
 
-#         layout = QHBoxLayout()
+        self.label = QLabel()
+        self.label.setText("Готов слушать")
 
-#         self.label = QLabel()
-#         self.label.setText("Готов слушать")
+        self.show_command_button = QPushButton("список комманд")
+        self.show_command_button.clicked.connect(self.show_command_button_click)
 
-#         self.show_command_button = QPushButton("список комманд")
-#         self.show_command_button.clicked.connect(self.show_command_button_click)
+        self.stop_listen_button = QPushButton("Перестать слушать")
+        self.stop_listen_button.clicked.connect(self.stop_listen_button_click)
 
-#         self.stop_listen_button = QPushButton("Перестать слушать")
-#         self.stop_listen_button.clicked.connect(self.stop_listen_button_click)
+        layout.addWidget(self.label)
+        layout.addWidget(self.show_command_button)
+        layout.addWidget(self.stop_listen_button)
 
-#         layout.addWidget(self.label)
-#         layout.addWidget(self.show_command_button)
-#         layout.addWidget(self.stop_listen_button)
+        self.setLayout(layout)
 
-#         central_widget = QWidget()
-#         central_widget.setLayout(layout)
 
-#         self.setCentralWidget(central_widget)
+class MainWindow(QMainWindow):
+    voice_commands = VoiceCommandsStorage()
+
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.init_ui()
+        self.init_voice_thread()
+
+    def init_ui(self):
+        self.setWindowTitle("Lolly")
+        self.setFixedSize(QSize(450,450))
+        self.setMainCentralWidget()
+    
+    def setMainCentralWidget(self):
+        self.central_widget = MainWidget(self.show_command_button_click,self.stop_listen_button_click)
+        self.setCentralWidget(self.central_widget)
+
+
+    def show_command_button_click(self):
+        # self.command_window = CommandWindow(self.voice_commands)
+        # self.command_window.show()
+        self.setCentralWidget(CommandWindow(self.voice_commands,self))
+    
+    def stop_listen_button_click(self):
+        if self.voice_thread.isFinished():
+            self.voice_thread.start()
+        else:
+            self.voice_thread.quit()
+            self.voice_thread.wait()
+
+
+    def init_voice_thread(self):
+        self.voice_thread = VoiceRecognationTread(self.voice_commands)
+        self.voice_thread.start()
+    
+        self.voice_thread.recognized_text_signal.connect(self.after_recognition_phrase)
+        self.voice_thread.start_listen_signal.connect(self.start_listen_process)
+        self.voice_thread.stop_listen_signal.connect(self.stop_listen_process)
+
+        self.voice_thread.finished.connect(self.voice_thread_finished)
+        self.voice_thread.started.connect(self.voice_thread_started)
 
     
-#     def show_command_button_click(self):
-#         self.command_window = CommandWindow(self.voice_assistant.commands)
-#         self.command_window.show()
+    def start_listen_process(self):
+        self.setStyleSheet("background-color: red;")
     
-#     def stop_listen_button_click(self):
-#         if self.voice_thread.isFinished():
-#             self.voice_thread.start()
-#         else:
-#             self.voice_thread.quit()
-#             self.voice_thread.wait()
+    def stop_listen_process(self):
+        self.setStyleSheet("background-color: white;")
 
-
-#     def init_voice_thread(self):
-#         self.voice_assistant = VoiceAssistant()
-#         self.voice_thread = VoiceRecognationTread(self.voice_assistant)
-#         self.voice_thread.start()
+    def voice_thread_finished(self):
+        print("voice thread is finished")
     
-#         self.voice_thread.recognized_text_signal.connect(self.after_recognition_phrase)
-#         self.voice_thread.start_listen_signal.connect(self.start_listen_process)
-#         self.voice_thread.stop_listen_signal.connect(self.stop_listen_process)
-
-#         self.voice_thread.finished.connect(self.voice_thread_finished)
-#         self.voice_thread.started.connect(self.voice_thread_started)
-
+    def voice_thread_started(self):
+        print("voice thread is starting")
     
-#     def start_listen_process(self):
-#         self.setStyleSheet("background-color: red;")
-    
-#     def stop_listen_process(self):
-#         self.setStyleSheet("background-color: white;")
-
-#     def voice_thread_finished(self):
-#         print("voice thread is finished")
-    
-#     def voice_thread_started(self):
-#         print("voice thread is starting")
-    
-#     def after_recognition_phrase(self,result):
-#         if result["is_recognitioned"]:
-#             self.label.setText(result["text"])
-#         else:
-#             self.label.setText("Не распознал")
+    def after_recognition_phrase(self,result):
+        if result["is_recognitioned"]:
+            pass
+            # main_widget = MainWidget(self.show_command_button_click,self.stop_listen_button_click)
+            # main_widget.label.setText(result["text"])
+            # self.setCentralWidget(main_widget)
+        else:
+            pass
+            # self.label.setText("Не распознал")
 
 
-# class CommandItem(QWidget):
-#     def __init__(self,command):
-#         super().__init__()
+class CommandItem(QWidget):
+    def __init__(self,phrases,command:VoiceCommand,voice_commands:VoiceCommandsStorage):
+        super().__init__()
 
-#         self.phrases_label = QLabel()
-#         phrases = ",\n".join(command["phrases"])
-#         self.phrases_label.setText(f"Фразы:\n {phrases}")
+        layout = QHBoxLayout()
 
-#         self.name_label = QLabel()
-#         name = beatiful_string(command["command"]["name"])
-#         self.name_label.setText(name)
+        self.phrases_label = QLabel()
+        phrases = ",\n".join(phrases)
+        self.phrases_label.setText(f"Фразы:\n {phrases}")
 
-#         layout = QHBoxLayout()
-#         layout.addWidget(self.name_label)
-#         layout.addWidget(self.phrases_label)
-#         self.setLayout(layout)
+        self.name_label = QLabel()
+        name = beatiful_string(command.name)
+        self.name_label.setText(name)
 
+        if command.is_user_command:
+            self.delete_button = QPushButton("Удалить")
+            self.delete_button.clicked.connect(self.delete_button_on_click(command,voice_commands))
+            layout.addWidget(self.delete_button)
 
-# class CommandWindow(QWidget):
-#     def __init__(self,commands):
-#         super().__init__()
-#         self.init_ui(commands)
+        layout.addWidget(self.name_label)
+        layout.addWidget(self.phrases_label)
 
-#     def init_ui(self,commands):
-#         self.setWindowTitle("Список доступных комманд")
-#         self.setGeometry(100,100,200,300)
+        self.setLayout(layout)
 
-#         self.to_add_command_button = QPushButton("Добавить команду")
-#         self.add_command_window = None
-#         self.to_add_command_button.clicked.connect(self.to_add_command_window)
+    def delete_button_on_click(self,command:VoiceCommand,voice_commands:VoiceCommandsStorage):
+        def helper():
+            voice_commands.delete_command(command)
 
-#         layout = QVBoxLayout()
-#         self.list_widget = QListWidget(self)
-
-#         for command in commands:
-#             item = QListWidgetItem(self.list_widget)
-#             command_item = CommandItem(command)
-#             item.setSizeHint(command_item.sizeHint())
-
-#             self.list_widget.addItem(item)
-#             self.list_widget.setItemWidget(item,command_item)
-
-#         layout.addWidget(self.to_add_command_button)
-#         layout.addWidget(self.list_widget)
-#         self.setLayout(layout)
-    
-#     def to_add_command_window(self):
-#         self.add_command_window = AddCommandMainWindow()
-#         self.add_command_window.show()
-
-
-# class AddCommandWindowBase(QWidget):
-#     def __init__(self) -> None:
-#         super().__init__()
-#         self.init_ui()
-    
-#     def init_ui(self):
-#         pass
-    
-#     def add_important_widget_in_layout(self,layout):
-#         self.name_input, self.phrase_input = QLineEdit(),QLineEdit()
-#         self.name_input.setPlaceholderText("Имя команды")
-#         self.phrase_input.setPlaceholderText("Фразы, через запятую")
-
-#         self.add_button = QPushButton("Создать")
-#         self.add_button.clicked.connect(self.add_button_click)
-
-#         layout.addWidget(self.name_input)
-#         layout.addWidget(self.phrase_input)
-#         layout.addWidget(self.add_button)
-
-#         return layout
-
-
-#     def add_button_click(self):
-#         phrases = [p.strip() for p in self.phrase_input.text().split(",")]
-#         command_name = self.name_input.text().strip()
-
-#         msg_box = QMessageBox()
+            nonlocal self
+            self.phrases_label.setText("")
+            self.name_label.setText("")
+            self.delete_button.setText("")
         
-#         if not len(phrases):
-#             msg_box.setIcon(QMessageBox.Icon.Warning)
-#             msg_box.setText("Введите хотя бы одну фразу")
-#         elif not command_name:
-#             msg_box.setIcon(QMessageBox.Icon.Warning)
-#             msg_box.setText("Введите имя комманды")
-        
-#         return command_name, phrases, msg_box
+        return helper
 
 
+class CommandWindow(QWidget):
+    def __init__(self,voice_commands:VoiceCommandsStorage,main_window:MainWindow):
+        super().__init__()
+        self.voice_commands = voice_commands
+        self.main_window = main_window
+        self.init_ui()
 
-# class AddBrowserCommandWindow(AddCommandWindowBase):
-#     def init_ui(self):
-#         self.setWindowTitle("Новая команда: Открытие сайта")
-#         self.url_input = QLineEdit()
-#         self.url_input.setPlaceholderText("Адрес сайта")
+    def init_ui(self):
+        self.setWindowTitle("Список доступных комманд")
+        self.setGeometry(100,100,200,300)
 
-#         layout = QHBoxLayout()
-#         layout.addWidget(self.url_input)
-#         self.setLayout(self.add_important_widget_in_layout(layout))
+        self.back_button = QPushButton("Назад")
+        self.back_button.clicked.connect(self.back_button_click)
+
+        self.to_add_command_button = QPushButton("Добавить команду")
+        self.add_command_window = None
+        self.to_add_command_button.clicked.connect(self.to_add_command_window)
+
+        layout = QVBoxLayout()
+        self.list_widget = QListWidget(self)
+
+        for phrases,command in self.voice_commands:
+            item = QListWidgetItem(self.list_widget)
+            command_item = CommandItem(phrases,command,self.voice_commands)
+            item.setSizeHint(command_item.sizeHint())
+
+            self.list_widget.addItem(item)
+            self.list_widget.setItemWidget(item,command_item)
+
+        layout.addWidget(self.to_add_command_button)
+        layout.addWidget(self.list_widget)
+        layout.addWidget(self.back_button)
+        self.setLayout(layout)
+
+    def to_add_command_window(self):
+        # self.add_command_window = AddCommandMainWindow(self.voice_commands)
+        # self.add_command_window.show()
+        self.main_window.setCentralWidget(AddCommandMainWindow(self.voice_commands,self.main_window))
     
-#     def url_check(self,url):
-#         from re import search
-#         url_pattern = r"(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?"
-#         return search(url_pattern,url) is not None
-
-#     def add_button_click(self):
-#         command_name, phrases, msg_box = super().add_button_click()
-#         url = self.url_input.text()
-
-#         if not self.url_check(url):
-#             msg_box.setIcon(QMessageBox.Icon.Warning)
-#             msg_box.setText("Вы ввели неверный адрес сайта")
-#         else:
-#             add_command(
-#                 name=command_name,
-#                 exe_path="ahk/Run browser.ahk",
-#                 exe_args=[url],
-#                 phrases=phrases,
-#                 command_path=r"{}\{}\{}".format(config.COMMANDS_PATH,"browser",config.COMMANDS_FILE_NAME)
-#             )
-#             msg_box.setText("Успешно добавлено")
-#             msg_box.setIcon(QMessageBox.Icon.Information)
-
-#         self.close()
-#         msg_box.exec()
+    def back_button_click(self):
+        self.main_window.setMainCentralWidget()
 
 
-
-
-# class AddFolderExeCommandWindow(AddCommandWindowBase):
-#     def init_ui(self):
-#         self.setWindowTitle("Новая команда: Показ каталога")
-#         self.folder_path_input = QLineEdit()
-#         self.folder_path_input.setPlaceholderText("Путь")
-
-#         layout = QHBoxLayout()
-#         layout.addWidget(self.folder_path_input)
-#         self.setLayout(self.add_important_widget_in_layout(layout))
+class AddCommandWindowBase(QWidget):
+    def __init__(self,voice_commands:VoiceCommandsStorage, main_window:MainWindow) -> None:
+        super().__init__()
+        self.voice_commands = voice_commands
+        self.main_window = main_window
+        self.init_ui()
     
-#     def check_folder_path(self,path):
-#         import os
-#         return os.path.exists(path)
+    def init_ui(self):
+        pass
+
+    def clear_phrase_input(self,phrase_input:str):
+        import re
+
+        phrase_input = re.sub(r"\s{2,}","",phrase_input.lower().strip())
+
+        for letter in phrase_input:
+            if letter not in (RUSSIAN_LOW_LETTERS + (" ",",")):
+                return False, phrase_input
+
+        return True, phrase_input
     
-#     def add_button_click(self):
-#         command_name, phrases, msg_box = super().add_button_click()
-#         folder_path = self.folder_path_input.text()
+    def create_command(self,msg_box:QMessageBox,command:VoiceCommand,phrases):
+        text = "Команда успешно добавлена"
+        try:
+            self.voice_commands.create_new_command(command,phrases)
+            self.main_window.setMainCentralWidget()
+        except self.voice_commands.CommandPhraseExists as error:
+            text = f"Фраза `{error.phrase}` уже существует"
 
-#         if not self.check_folder_path(folder_path):
-#             msg_box.setIcon(QMessageBox.Icon.Warning)
-#             msg_box.setText("По такому пути нет каталога")
-#         else:
-#             add_command(
-#                 name=command_name,
-#                 exe_path="ahk/Open file.ahk",
-#                 exe_args=[folder_path],
-#                 phrases=phrases,
-#                 command_path=r"{}\{}\{}".format(config.COMMANDS_PATH,"windows",config.COMMANDS_FILE_NAME)
-#             )
-#             msg_box.setText("Успешно добавлено")
-#             msg_box.setIcon(QMessageBox.Icon.Information)
-
-#         self.close()
-#         msg_box.exec()
+        msg_box.setText(text)
+        msg_box.exec()
 
 
-# class AddApplicationCommandWindow(QWidget):
-#     def __init__(self):
-#         super().__init__()
-#         self.init_ui()
     
-#     def init_ui(self):
-#         self.setWindowTitle("Новая команда: Запуск приложения")
+    def add_important_widget_in_layout(self,layout):
+        self.name_input, self.phrase_input = QLineEdit(),QLineEdit()
+        self.name_input.setPlaceholderText("Имя команды")
+        self.phrase_input.setPlaceholderText("Фразы, через запятую")
+        self.back_button = QPushButton("Назад")
+        self.back_button.clicked.connect(self.back_button_click)
 
-# class AddGameCommandWindow(QWidget):
-#     def __init__(self):
-#         super().__init__()
-#         self.init_ui()
+        self.add_button = QPushButton("Создать")
+        self.add_button.clicked.connect(self.add_button_click)
+
+        layout.addWidget(self.name_input)
+        layout.addWidget(self.phrase_input)
+        layout.addWidget(self.add_button)
+        layout.addWidget(self.back_button)
+
+        return layout
     
-#     def init_ui(self):
-#         self.setWindowTitle("Новая команда: Включение игры")
+    def back_button_click(self):
+        self.main_window.setCentralWidget(AddCommandMainWindow(self.voice_commands,self.main_window))
 
 
-# class AddCommandMainWindow(QWidget):
-#     def __init__(self):
-#         super().__init__()
-#         self.init_ui()
+    def add_button_click(self):
+        is_phrases_clean, phrase_input = self.clear_phrase_input(self.phrase_input.text())
+        phrases = [p.strip() for p in phrase_input.split(",")]
+        error_message_text = None
+        command_name = self.name_input.text().strip()
+
+        if not is_phrases_clean:
+            error_message_text = "Во фразе допускаются только русские буквы, пробелы и запятые"
+        elif not len(phrases):
+            error_message_text = "Введите хотя бы одну фразу"
+        elif not command_name:
+            error_message_text = "Введите имя команды"
+
+        msg_box = QMessageBox()
+
+        if error_message_text is not None:
+            msg_box.setText(error_message_text)
+            msg_box.exec()
+
+        return (error_message_text is not None),command_name, phrases, msg_box
+
+
+
+class AddBrowserCommandWindow(AddCommandWindowBase):
+    def init_ui(self):
+        self.setWindowTitle("Новая команда: Открытие сайта")
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("Адрес сайта")
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.url_input)
+        self.setLayout(self.add_important_widget_in_layout(layout))
     
-#     def init_ui(self):
-#         self.setWindowTitle("Добавление новой команды")
+    def url_check(self,url):
+        from re import search
+        url_pattern = r"(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?"
+        return search(url_pattern,url) is not None
 
-#         self.browser_button = QPushButton("Открытие сайта")
-#         self.folder_exe_button = QPushButton("Показ каталога\приложения")
-#         self.game_button = QPushButton("Включение игры")
+    def add_button_click(self):
+        is_error, command_name, phrases, msg_box = super().add_button_click()
+        if is_error:
+            return
 
-#         self.browser_button.clicked.connect(self.button_click("browser"))
-#         self.folder_exe_button.clicked.connect(self.button_click("folder_exe"))
-#         self.game_button.clicked.connect(self.button_click("game"))
+        url = self.url_input.text()
 
-#         self.window1 = None
-#         self.window2 = None
-#         self.window3 = None
+        if not self.url_check(url):
+            msg_box.setIcon(QMessageBox.Icon.Warning)
+            msg_box.setText("Вы ввели неверный адрес сайта")
+        else:
+            command = VoiceCommand(
+                    name=command_name,
+                    action="ahk",
+                    sounds=["hello"],
+                    group="browser",
+                    cli_cmd=None,
+                    cli_args=None,
+                    exe_path="ahk/Run browser.ahk",
+                    exe_args=[url],
+                    is_user_command=True
+            )
 
-#         layout = QHBoxLayout()
-#         layout.addWidget(self.browser_button)
-#         layout.addWidget(self.folder_exe_button)
-#         layout.addWidget(self.game_button)
+            self.create_command(msg_box,command,phrases)
 
-#         self.setLayout(layout)
+
+
+
+class AddFolderExeCommandWindow(AddCommandWindowBase):
+    def init_ui(self):
+        self.setWindowTitle("Новая команда: Показ каталога")
+        self.folder_path_input = QLineEdit()
+        self.folder_path_input.setPlaceholderText("Путь")
+
+        layout = QHBoxLayout()
+        layout.addWidget(self.folder_path_input)
+        self.setLayout(self.add_important_widget_in_layout(layout))
     
-#     def button_click(self,button_name):
-#         to_open_window_type, window_name =  {
-#             "browser" : (AddBrowserCommandWindow,"window1"),
-#             "folder_exe" : (AddFolderExeCommandWindow,"window2"),
-#             "game" : (AddGameCommandWindow,"window3")
-#         }[button_name]
+    def check_folder_path(self,path):
+        import os
+        return os.path.exists(path)
+    
+    def add_button_click(self):
+        is_error, command_name, phrases, msg_box = super().add_button_click()
+        if is_error:
+            return
 
-#         def helper():
-#             setattr(self,window_name,to_open_window_type())
-#             getattr(self,window_name).show()
-        
-#         return helper
+        folder_path = self.folder_path_input.text()
 
+        if not self.check_folder_path(folder_path):
+            msg_box.setIcon(QMessageBox.Icon.Warning)
+            msg_box.setText("По такому пути нет каталога")
+        else:
+            command = VoiceCommand(
+                    name=command_name,
+                    action="ahk",
+                    sounds=["hello"],
+                    group="windows",
+                    cli_cmd=None,
+                    cli_args=None,
+                    exe_path="ahk/Open file.ahk",
+                    exe_args=[folder_path],
+                    is_user_command=True
+            )
+
+            self.create_command(msg_box,command,phrases)
+
+class AddGameCommandWindow(AddCommandWindowBase):
+    pass
+
+
+class AddCommandMainWindow(QWidget):
+    def __init__(self,voice_commands:VoiceCommandsStorage,main_window:MainWindow):
+        super().__init__()
+        self.voice_commands = voice_commands
+        self.main_window = main_window
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle("Добавление новой команды")
+
+        self.browser_button = QPushButton("Открытие сайта")
+        self.folder_exe_button = QPushButton("Показ каталога\приложения")
+        self.game_button = QPushButton("Включение игры")
+        self.back_button = QPushButton("Назад")
+
+        self.browser_button.clicked.connect(self.button_click("browser"))
+        self.folder_exe_button.clicked.connect(self.button_click("folder_exe"))
+        self.game_button.clicked.connect(self.button_click("game"))
+        self.back_button.clicked.connect(self.back_button_click)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.browser_button)
+        layout.addWidget(self.folder_exe_button)
+        layout.addWidget(self.game_button)
+        layout.addWidget(self.back_button)
+
+        self.setLayout(layout)
+
+    def back_button_click(self):
+        self.main_window.setCentralWidget(CommandWindow(self.voice_commands,self.main_window))
+    
+    def button_click(self,button_name):
+        to_open_window_type =  {
+            "browser" : AddBrowserCommandWindow,
+            "folder_exe" : AddFolderExeCommandWindow,
+            "game" : AddGameCommandWindow
+        }[button_name]
+
+        def helper():
+            self.main_window.setCentralWidget(to_open_window_type(self.voice_commands,self.main_window))
+
+        return helper
 
 if __name__ == "__main__":
-    from voice_assistent import VoiceAssistant
-    v = VoiceAssistant()
-    v.react("заблокируй компьютер")
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()

@@ -84,3 +84,6 @@ class GigaChat:
         }
         response = requests.post(self.GET_TOKEN_URL,headers=headers,data=payload,verify=False)
         return response.json()["access_token"]
+
+
+g = GigaChat()
