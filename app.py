@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 import sys
 from voice_recognation_thread import VoiceRecognationTread
 from voice_commands import VoiceCommandsStorage,VoiceCommand
-from utils import beatiful_string, add_command, RUSSIAN_LOW_LETTERS
+from utils import beatiful_string, RUSSIAN_LOW_LETTERS
 
 
 class MainWidget(QWidget):
@@ -62,8 +62,8 @@ class MainWindow(QMainWindow):
         self.setMainCentralWidget()
     
     def setMainCentralWidget(self):
-        self.central_widget = MainWidget(self.show_command_button_click,self.stop_listen_button_click)
-        self.setCentralWidget(self.central_widget)
+        central_widget = MainWidget(self.show_command_button_click,self.stop_listen_button_click)
+        self.setCentralWidget(central_widget)
 
 
     def show_command_button_click(self):
